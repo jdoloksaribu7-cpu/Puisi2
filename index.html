@@ -1,0 +1,387 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kuis Bahasa Indonesia - Puisi</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #dbeafe, #ede9fe);
+    margin: 0;
+    padding: 20px;
+    color: #26324b;
+}
+
+.container {
+    max-width: 750px;
+    margin: 30px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 18px;
+    box-shadow: 0 5px 20px #0002;
+}
+
+h1 {
+    text-align: center;
+    color: #5b21b6;
+}
+
+.subtitle {
+    text-align: center;
+    color: #64748b;
+}
+
+.identitas {
+    display: grid;
+    gap: 12px;
+    margin: 25px 0;
+}
+
+input {
+    padding: 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 15px;
+}
+
+.progress {
+    background: #e2e8f0;
+    height: 10px;
+    border-radius: 10px;
+    margin: 20px 0;
+}
+
+.progress-bar {
+    background: #7c3aed;
+    height: 10px;
+    width: 0%;
+    border-radius: 10px;
+}
+
+.question {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.option {
+    display: block;
+    padding: 14px;
+    margin: 10px 0;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.option:hover {
+    background: #f3e8ff;
+    border-color: #8b5cf6;
+}
+
+.option.selected {
+    background: #ede9fe;
+    border-color: #7c3aed;
+}
+
+button {
+    background: #7c3aed;
+    color: white;
+    border: none;
+    padding: 13px 22px;
+    border-radius: 9px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 20px;
+}
+
+button:hover {
+    background: #5b21b6;
+}
+
+#result {
+    display: none;
+    text-align: center;
+}
+
+.score {
+    font-size: 35px;
+    font-weight: bold;
+    color: #7c3aed;
+}
+
+.feedback {
+    text-align: left;
+    background: #f8fafc;
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 15px;
+}
+
+.correct {
+    color: green;
+}
+
+.wrong {
+    color: #dc2626;
+}
+
+.hidden {
+    display: none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>📚 KUIS MATERI PUISI</h1>
+<p class="subtitle">
+    Mata Pelajaran Bahasa Indonesia | Tingkat SMP
+</p>
+
+<div id="start">
+    <h3>Selamat Datang di Kuis Puisi!</h3>
+    <p>Isilah identitas terlebih dahulu sebelum mengerjakan soal.</p>
+
+    <div class="identitas">
+        <input type="text" id="nama" placeholder="Nama siswa">
+        <input type="text" id="kelas" placeholder="Kelas">
+    </div>
+
+    <button onclick="mulaiKuis()">Mulai Kuis</button>
+</div>
+
+<div id="quiz" class="hidden">
+
+    <p id="nomor"></p>
+
+    <div class="progress">
+        <div class="progress-bar" id="bar"></div>
+    </div>
+
+    <div class="question" id="pertanyaan"></div>
+
+    <div id="pilihan"></div>
+
+    <button onclick="berikutnya()" id="next">
+        Soal Berikutnya
+    </button>
+
+</div>
+
+<div id="result">
+    <h2>🎉 Kuis Selesai!</h2>
+    <p id="identitasHasil"></p>
+
+    <div class="score" id="nilai"></div>
+    <p id="pesan"></p>
+
+    <div id="pembahasan"></div>
+
+    <button onclick="ulangKuis()">Ulangi Kuis</button>
+</div>
+
+</div>
+
+<script>
+
+const soal = [
+{
+q: "Apa yang dimaksud dengan puisi?",
+o: [
+"Karya sastra yang mengutamakan keindahan bahasa dan makna",
+"Teks yang berisi langkah-langkah kegiatan",
+"Karangan yang berisi laporan pengamatan",
+"Cerita yang disampaikan dalam bentuk dialog"
+],
+a: 0,
+e: "Puisi adalah karya sastra yang mengungkapkan pikiran dan perasaan melalui bahasa yang indah dan bermakna."
+},
+{
+q: "Salah satu ciri utama puisi adalah ...",
+o: [
+"Selalu memiliki paragraf panjang",
+"Menggunakan bahasa yang padat dan indah",
+"Berisi petunjuk penggunaan alat",
+"Selalu menggunakan dialog"
+],
+a: 1,
+e: "Puisi menggunakan bahasa yang padat, indah, dan memiliki makna tertentu."
+},
+{
+q: "Orang yang menciptakan puisi disebut ...",
+o: ["Novelis", "Penyair", "Wartawan", "Sutradara"],
+a: 1,
+e: "Penyair adalah orang yang menciptakan atau menulis puisi."
+},
+{
+q: "Pengulangan bunyi pada akhir larik puisi disebut ...",
+o: ["Rima", "Tema", "Amanat", "Latar"],
+a: 0,
+e: "Rima adalah pengulangan bunyi dalam puisi yang menimbulkan keindahan."
+},
+{
+q: "Gagasan pokok atau ide utama dalam puisi disebut ...",
+o: ["Diksi", "Rima", "Tema", "Tipografi"],
+a: 2,
+e: "Tema merupakan gagasan utama yang menjadi dasar penulisan puisi."
+},
+{
+q: "Pilihan kata yang digunakan penyair dalam puisi disebut ...",
+o: ["Diksi", "Alur", "Tokoh", "Latar"],
+a: 0,
+e: "Diksi adalah pilihan kata yang digunakan untuk menciptakan keindahan dan makna."
+},
+{
+q: "Puisi yang berisi cerita atau rangkaian peristiwa disebut ...",
+o: ["Puisi lirik", "Puisi naratif", "Puisi satire", "Himne"],
+a: 1,
+e: "Puisi naratif adalah puisi yang menyampaikan cerita atau peristiwa."
+},
+{
+q: "Puisi yang berisi sindiran atau kritik disebut ...",
+o: ["Ode", "Himne", "Satire", "Romansa"],
+a: 2,
+e: "Satire merupakan puisi yang berisi kritik atau sindiran terhadap keadaan tertentu."
+},
+{
+q: "Kalimat 'Angin berbisik di telingaku' menggunakan majas ...",
+o: ["Hiperbola", "Personifikasi", "Metafora", "Ironi"],
+a: 1,
+e: "Personifikasi adalah majas yang memberikan sifat manusia kepada benda atau alam."
+},
+{
+q: "Pesan yang ingin disampaikan penyair kepada pembaca disebut ...",
+o: ["Amanat", "Rima", "Diksi", "Tipografi"],
+a: 0,
+e: "Amanat adalah pesan atau nilai yang ingin disampaikan melalui puisi."
+}
+];
+
+let index = 0;
+let jawaban = [];
+let nama = "";
+let kelas = "";
+
+function mulaiKuis() {
+    nama = document.getElementById("nama").value.trim();
+    kelas = document.getElementById("kelas").value.trim();
+
+    if (!nama || !kelas) {
+        alert("Silakan isi nama dan kelas terlebih dahulu!");
+        return;
+    }
+
+    document.getElementById("start").classList.add("hidden");
+    document.getElementById("quiz").classList.remove("hidden");
+
+    tampilSoal();
+}
+
+function tampilSoal() {
+    let s = soal[index];
+
+    document.getElementById("nomor").innerText =
+        "Soal " + (index + 1) + " dari " + soal.length;
+
+    document.getElementById("bar").style.width =
+        ((index + 1) / soal.length * 100) + "%";
+
+    document.getElementById("pertanyaan").innerText = s.q;
+
+    let html = "";
+
+    s.o.forEach((pilihan, i) => {
+        html += `
+        <div class="option ${jawaban[index] === i ? 'selected' : ''}"
+             onclick="pilih(${i})">
+             ${String.fromCharCode(65+i)}. ${pilihan}
+        </div>`;
+    });
+
+    document.getElementById("pilihan").innerHTML = html;
+
+    document.getElementById("next").innerText =
+        index === soal.length - 1 ? "Lihat Hasil" : "Soal Berikutnya";
+}
+
+function pilih(i) {
+    jawaban[index] = i;
+    tampilSoal();
+}
+
+function berikutnya() {
+    if (jawaban[index] === undefined) {
+        alert("Pilih salah satu jawaban terlebih dahulu!");
+        return;
+    }
+
+    if (index < soal.length - 1) {
+        index++;
+        tampilSoal();
+    } else {
+        hasilKuis();
+    }
+}
+
+function hasilKuis() {
+    let benar = 0;
+    let html = "";
+
+    soal.forEach((s, i) => {
+        let tepat = jawaban[i] === s.a;
+
+        if (tepat) benar++;
+
+        html += `
+        <div class="feedback">
+        <b>Soal ${i+1}: ${tepat
+            ? '<span class="correct">Benar ✓</span>'
+            : '<span class="wrong">Salah ✗</span>'}</b>
+        <p>${s.q}</p>
+        <p>Jawaban benar: ${String.fromCharCode(65+s.a)}. ${s.o[s.a]}</p>
+        <p><i>Pembahasan: ${s.e}</i></p>
+        </div>`;
+    });
+
+    let nilai = benar * 10;
+
+    document.getElementById("quiz").classList.add("hidden");
+    document.getElementById("result").style.display = "block";
+
+    document.getElementById("identitasHasil").innerText =
+        "Nama: " + nama + " | Kelas: " + kelas;
+
+    document.getElementById("nilai").innerText = nilai;
+
+    document.getElementById("pesan").innerText =
+        nilai >= 80 ? "Hebat! Pemahamanmu tentang puisi sangat baik."
+        : nilai >= 60 ? "Bagus! Terus tingkatkan pemahamanmu."
+        : "Tetap semangat! Pelajari kembali materi puisi.";
+
+    document.getElementById("pembahasan").innerHTML = html;
+}
+
+function ulangKuis() {
+    index = 0;
+    jawaban = [];
+
+    document.getElementById("result").style.display = "none";
+    document.getElementById("start").classList.remove("hidden");
+    document.getElementById("nama").value = "";
+    document.getElementById("kelas").value = "";
+}
+
+</script>
+
+</body>
+</html>
